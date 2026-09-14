@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Administrador - CNC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-dark text-light d-flex align-items-center justify-content-center" style="min-height: 100vh; margin: 0;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card card-custom p-4 shadow-lg border-secondary">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h3 class="fw-bold text-info">Acesso ao Gerenciador</h3>
+                            <p class="text-secondary small">Magazine de Ferramentas CNC</p>
+                        </div>
+                        
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for categoria, mensagem in messages %}
+                                    <div class="alert alert-danger py-2 mb-3" style="background-color: rgba(244, 67, 54, 0.2); border: 1px solid #f44336; color: #ef9a9a; font-size: 14px;">⚠️ {{ mensagem }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <form action="{{ url_for('admin.login') }}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Usuário</label>
+                                <input type="text" name="usuario" class="form-control form-control-lg fs-6" required placeholder="Digite seu usuário">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Senha</label>
+                                <input type="password" name="senha" class="form-control form-control-lg fs-6" required placeholder="••••••••">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-blue w-100 py-2 fw-bold shadow-sm">Entrar no Sistema</button>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('operador.index') }}" class="text-secondary text-decoration-none small">← Voltar para a Tela Inicial</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

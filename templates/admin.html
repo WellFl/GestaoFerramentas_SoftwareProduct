@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Administrativo - CNC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="py-5">
+    <div class="container" style="max-width: 1100px;">
+        <div class="d-flex justify-content-between align-items-center p-3 mb-4 navbar-custom rounded">
+            <h1 class="h3 mb-0 text-white">⚙️ Painel Administrativo - CNC</h1>
+            <div>
+                <a href="{{ url_for('operador.index') }}" class="btn btn-blue btn-sm me-2">Ver Tela Operador</a>
+                <a href="{{ url_for('admin.logout') }}" class="btn btn-sm" style="background: #dc2626; color: white;">Sair</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, mensagem in messages %}
+                    {% if categoria == 'erro' %}
+                        <div class="alert alert-danger" style="background-color: rgba(244, 67, 54, 0.2); border: 1px solid #f44336; color: #ef9a9a;">⚠️ {{ mensagem }}</div>
+                    {% else %}
+                        <div class="alert alert-success" style="background-color: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; color: #a5d6a7;">✅ {{ mensagem }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Seção de Cadastros (Formulários) -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header card-header-slate py-3">🔧 Configurar Ferramenta (Magazine)</div>
+                    <div class="card-body p-4">
+                        <form action="{{ url_for('admin.cadastrar_ferramenta') }}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Posição (Ex: T1 a T20):</label>
+                                <input type="text" name="posicao" class="form-control bg-dark text-white border-secondary" placeholder="Ex: T1" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Nome da Ferramenta:</label>
+                                <input type="text" name="nome" class="form-control bg-dark text-white border-secondary" placeholder="Ex: Broca 10mm" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Vida Útil Limite (Peças):</label>
+                                <input type="number" name="vida_util" class="form-control bg-dark text-white border-secondary" placeholder="Ex: 1000" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-blue w-100 mt-2">Salvar Ferramenta</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header card-header-blue py-3">📦 Cadastrar Produto & Receita (BOM)</div>
+                    <div class="card-body p-4">
+                        <form action="{{ url_for('admin.cadastrar_produto') }}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Código do Produto:</label>
+                                <input type="text" name="codigo" class="form-control bg-dark text-white border-secondary" placeholder="Ex: PRD-001" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Nome do Produto:</label>
+                                <input type="text" name="nome" class="form-control bg-dark text-white border-secondary" placeholder="Ex: Bloco MMB" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-secondary">Ferramentas do Roteiro:</label>
+                                <div class="p-2 rounded" style="max-height: 140px; overflow-y: auto; background-color: #0f172a; border: 1px solid #334155;">
+                                    {% for f in ferramentas %}
+                                        <div class="form-check mb-1">
+                                            <input class="form-check-input" type="checkbox" name="ferramentas_usadas" value="{{ f.posicao }}" id="chk_{{ f.posicao }}" style="background-color: #1e293b; border-color: #475569;">
+                                            <label class="form-check-label text-light" for="chk_{{ f.posicao }}" style="cursor:pointer;">
+                                                {{ f.posicao }} - {{ f.nome }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-blue w-100 mt-2">Cadastrar Produto</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Consultas e Cadastros Atuais (Lado a Lado Compacto) -->
+        <div class="row g-4 mb-4">
+            <!-- Ferramentas no Magazine (Com Ações) -->
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header card-header-slate py-3">📋 Ferramentas no Magazine</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
+                            <table class="table table-dark table-sm table-striped mb-0 align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Pos.</th>
+                                        <th>Nome</th>
+                                        <th>Limite</th>
+                                        <th>Atual</th>
+                                        <th class="text-end pe-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for f in ferramentas %}
+                                    <tr>
+                                        <td><span class="badge bg-primary">{{ f.posicao }}</span></td>
+                                        <td>{{ f.nome }}</td>
+                                        <td>{{ f.vida_util_limite }}</td>
+                                        <td>{{ f.pecas_produzidas }}</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ url_for('admin.editar_ferramenta', posicao=f.posicao) }}" class="btn btn-sm btn-outline-warning py-0 px-2 me-1" style="font-size: 11px;">Editar</a>
+                                            <form action="{{ url_for('admin.excluir_ferramenta', posicao=f.posicao) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente remover a ferramenta da posição {{ f.posicao }}?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;">Excluir</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-3">Nenhuma ferramenta cadastrada.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produtos Cadastrados (Com Ações) -->
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-header card-header-blue py-3">📋 Produtos e Receitas</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
+                            <table class="table table-dark table-sm table-striped mb-0 align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Cód.</th>
+                                        <th>Nome</th>
+                                        <th>Ferramentas</th>
+                                        <th class="text-end pe-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in produtos %}
+                                    <tr>
+                                        <td><strong>{{ p.codigo }}</strong></td>
+                                        <td>{{ p.nome }}</td>
+                                        <td>
+                                            {% for ferr in p.ferramentas %}
+                                                <span class="badge bg-secondary me-1">{{ ferr }}</span>
+                                            {% endfor %}
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ url_for('admin.editar_produto', id=p.id) }}" class="btn btn-sm btn-outline-warning py-0 px-2 me-1" style="font-size: 11px;">Editar</a>
+                                            <form action="{{ url_for('admin.excluir_produto', id=p.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente excluir o produto {{ p.codigo }}?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;">Excluir</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">Nenhum produto cadastrado.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Históricos (Abaixo) -->
+        <div class="row g-4">
+            <!-- Histórico de Apontamentos -->
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-header card-header-slate py-3">📊 Histórico de Apontamentos de Produção</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped mb-0 align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>OP</th>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ap in apontamentos %}
+                                    <tr>
+                                        <td>{{ ap.data_apontamento }}</td>
+                                        <td><code>{{ ap.ordem_producao }}</code></td>
+                                        <td>{{ ap.produto_nome }}</td>
+                                        <td>{{ ap.quantidade }} pçs</td>
+                                        <td><span class="badge bg-info text-dark">{{ ap.status_producao }}</span></td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ url_for('admin.editar_apontamento', id=ap.id) }}" class="btn btn-sm btn-outline-warning py-0 px-2 me-1" style="font-size: 11px;">Editar</a>
+                                            <form action="{{ url_for('admin.excluir_apontamento', id=ap.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente excluir este apontamento?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;">Excluir</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-3">Nenhum apontamento registrado.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Trocas de Ferramentas -->
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-header card-header-slate py-3">🔄 Histórico de Trocas de Ferramentas</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped mb-0 align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Posição</th>
+                                        <th>Ferramenta</th>
+                                        <th>Peças Produzidas</th>
+                                        <th>Motivo</th>
+                                        <th>Operador</th>
+                                        <th class="text-end pe-3">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hist in historico %}
+                                    <tr>
+                                        <td>{{ hist.data_troca }}</td>
+                                        <td><span class="badge bg-primary">{{ hist.posicao }}</span></td>
+                                        <td>{{ hist.nome_ferramenta }}</td>
+                                        <td>{{ hist.pecas_produzidas }} / {{ hist.vida_util_limite }}</td>
+                                        <td>{{ hist.motivo }}</td>
+                                        <td>{{ hist.operador }}</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ url_for('admin.editar_troca', id=hist.id) }}" class="btn btn-sm btn-outline-warning py-0 px-2 me-1" style="font-size: 11px;">Editar</a>
+                                            <form action="{{ url_for('admin.excluir_troca', id=hist.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja excluir este registro de troca?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;">Excluir</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-3">Nenhuma troca registrada.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

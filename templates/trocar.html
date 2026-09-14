@@ -1,0 +1,62 @@
+<!-- templates/troca.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Troca de Ferramenta - CNC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="d-flex align-items-center justify-content-center" style="min-height: 100vh; margin: 0;">
+    <div class="container" style="max-width: 500px;">
+        <div class="card card-custom p-4 shadow-lg border-secondary">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <span class="badge-posicao fs-4 px-3 py-1 mb-2">{{ ferramenta.posicao }}</span>
+                    <h3 class="fw-bold text-white h5 mt-2">{{ ferramenta.nome }}</h3>
+                    <p class="text-secondary small">Registro Obrigatório de Substituição</p>
+                </div>
+
+                <div class="p-3 rounded mb-4" style="background-color: #0f172a; border: 1px solid #334155;">
+                    <div class="d-flex justify-content-between text-secondary small">
+                        <span>Produção Atual:</span>
+                        <span class="text-white fw-bold">{{ ferramenta.pecas_produzidas }} / {{ ferramenta.vida_util_limite }} pçs</span>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('operador.trocar_ferramenta', posicao=ferramenta.posicao) }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-light">Nome do Operador:</label>
+                        <input type="text" name="operador" class="form-control" required placeholder="Digite seu nome completo">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-light">Motivo da Troca:</label>
+                        <select name="motivo" class="form-select" required>
+                            <option value="" disabled selected>Selecione o motivo...</option>
+                            <option value="Preventiva">Preventiva</option>
+                            <option value="Quebra acidental">Quebra acidental</option>
+                            <option value="Quebra por Desgaste">Quebra por Desgaste</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-light">Data da Troca:</label>
+                        <input type="date" name="data" class="form-control" required id="inputData">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('operador.index') }}" class="btn btn-slate w-50 py-2">Cancelar</a>
+                        <button type="submit" class="btn btn-blue w-50 py-2 fw-bold">Confirmar Troca</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preenche automaticamente com a data de hoje
+        document.getElementById('inputData').valueAsDate = new Date();
+    </script>
+</body>
+</html>

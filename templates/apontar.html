@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Apontamento de Produção - CNC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="py-5">
+    <div class="container" style="max-width: 650px;">
+        <div class="d-flex justify-content-between align-items-center p-3 mb-4 navbar-custom rounded">
+            <h1 class="h3 mb-0 text-white">Novo Apontamento de Produção</h1>
+            <a href="{{ url_for('operador.index') }}" class="btn btn-blue btn-sm">Voltar ao Início</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, mensagem in messages %}
+                    {% if categoria == 'erro' %}
+                        <div class="alert alert-danger" style="background-color: rgba(244, 67, 54, 0.2); border: 1px solid #f44336; color: #ef9a9a;">⚠️ {{ mensagem }}</div>
+                    {% else %}
+                        <div class="alert alert-success" style="background-color: rgba(76, 175, 80, 0.2); border: 1px solid #4CAF50; color: #a5d6a7;">✅ {{ mensagem }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card card-custom">
+            <div class="card-header card-header-blue py-3">📝 Informações da Produção</div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('operador.apontar_producao') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Produto em Fabricação:</label>
+                        <select name="produto_id" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="">Selecione o produto...</option>
+                            {% for p in produtos %}
+                                <option value="{{ p.id }}">{{ p.codigo }} - {{ p.nome }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text text-muted small">As ferramentas vinculadas a este produto terão a vida útil atualizada automaticamente.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Ordem de Produção (OP):</label>
+                        <input type="text" name="ordem_producao" class="form-control bg-dark text-white border-secondary" placeholder="Ex: 2026001" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Quantidade de Peças Produzidas:</label>
+                        <input type="number" name="quantidade" class="form-control bg-dark text-white border-secondary" min="1" placeholder="Ex: 50" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Status da Produção:</label>
+                        <select name="status_producao" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="Produção Concluída">Produção Concluída</option>
+                            <option value="Produção Pausada">Produção Pausada</option>
+                            <option value="Fim do Turno">Fim do Turno</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary">Data do Apontamento:</label>
+                        <input type="date" name="data" id="dataInput" class="form-control bg-dark text-white border-secondary" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('operador.index') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-blue">Salvar Apontamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('dataInput').valueAsDate = new Date();
+    </script>
+</body>
+</html>

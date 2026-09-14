@@ -1,0 +1,122 @@
+body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-custom {
+    background-color: #0b1120;
+    border-bottom: 2px solid #2563eb;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.card-custom {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.card-header-blue {
+    background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+    color: #ffffff;
+    border-bottom: none;
+    border-radius: 9px 9px 0 0 !important;
+    font-weight: 600;
+}
+
+.card-header-slate {
+    background: linear-gradient(90deg, #334155 0%, #475569 100%);
+    color: #ffffff;
+    border-bottom: none;
+    border-radius: 9px 9px 0 0 !important;
+    font-weight: 600;
+}
+
+.card-header-dark {
+    background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    color: #38bdf8;
+    border-bottom: 1px solid #334155;
+    border-radius: 9px 9px 0 0 !important;
+    font-weight: 600;
+}
+
+.form-control, .form-select {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    color: #f8fafc;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #0f172a;
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.form-control::placeholder {
+    color: #64748b;
+}
+
+.btn-blue {
+    background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-blue:hover {
+    background: linear-gradient(90deg, #1d4ed8 0%, #1e40af 100%);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+    color: #ffffff;
+}
+
+.btn-slate {
+    background: linear-gradient(90deg, #475569 0%, #334155 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-slate:hover {
+    background: linear-gradient(90deg, #334155 0%, #1e293b 100%);
+    color: #ffffff;
+}
+
+.table-custom {
+    color: #cbd5e1;
+    margin-bottom: 0;
+}
+
+.table-custom th {
+    background-color: #0f172a;
+    color: #38bdf8;
+    border-bottom: 2px solid #334155;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-custom td {
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+    vertical-align: middle;
+}
+
+.table-custom tbody tr:hover td {
+    background-color: #26334d;
+    color: #ffffff;
+}
+
+.badge-posicao {
+    background-color: #0284c7;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
+}
